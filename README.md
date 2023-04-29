@@ -31,6 +31,16 @@ node auth.js
 
 *NOTE:* If authentication is not working, I have setup debug statements that will print if `authNotes = true`, which is defined at the beginning of the script.
 
+## API Testing
+The `start()` method kicks off the authentication, which then calls `api_tests()`. There are two API calls that are needed in order to decrypt vaults and items. **/api/v2/overview** will give information for vaults that you have access to and the appropriate Key ID for decrypting vault contents. **/api/v2/account/keysets** will give your encrypted keyset, which can be decrypted using the session key derived from the authentication step. This is already included in `auth.js` so you shouldn't have to worry about it too much, but just know that they are helpful.
+
+The `send_enc_request(endpoint, method, key, params, body, debug=false)` method can be used to query an API endpoint and decrypt the results. Here are some examples:
+```js
+var retJson = await send_enc_request('/api/xyz', 'GET', sessionKey, {}, {}, false); // GET request (no query params)
+var retJson = await send_enc_request(`/api/xyz`, 'GET', sessionKey, {num: 8, id: '1234'}, {}); // GET request with params
+var retJson = await send_enc_request(`/api/xyz`, 'POST', sessionKey, {}, {uuid: '1234', name: "gary", permissions: 4872}, true); // POST request using JSON body and debug print statements turned on
+``` 
+
 ## Authentication Details
 *TODO* - I plan on adding my notes on 1Password's authentication here. 1Password has provided a [white paper](https://1passwordstatic.com/files/security/1password-white-paper.pdf) on how the security is designed.
 
